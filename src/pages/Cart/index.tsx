@@ -38,24 +38,26 @@ interface Product {
 const Cart: React.FC = () => {
   const { increment, decrement, products } = useCart();
 
-  function handleIncrement(id: string): void {
-    // TODO
-  }
-
-  function handleDecrement(id: string): void {
-    // TODO
-  }
-
   const cartTotal = useMemo(() => {
-    // TODO RETURN THE SUM OF THE QUANTITY OF THE PRODUCTS IN THE CART
+    const productsTotalValue = products.reduce(
+      (total: number, product: Product) => {
+        return total + product.price * (product.quantity || 1);
+      },
+      0,
+    );
 
-    return formatValue(0);
+    return formatValue(productsTotalValue);
   }, [products]);
 
   const totalItensInCart = useMemo(() => {
-    // TODO RETURN THE SUM OF THE QUANTITY OF THE PRODUCTS IN THE CART
+    const productsTotalItens = products.reduce(
+      (total: number, product: Product) => {
+        return total + (product.quantity || 1);
+      },
+      0,
+    );
 
-    return 0;
+    return productsTotalItens;
   }, [products]);
 
   return (
@@ -68,41 +70,45 @@ const Cart: React.FC = () => {
           ListFooterComponentStyle={{
             height: 80,
           }}
-          renderItem={({ item }: { item: Product }) => (
-            <Product>
-              <ProductImage source={{ uri: item.image_url }} />
-              <ProductTitleContainer>
-                <ProductTitle>{item.title}</ProductTitle>
-                <ProductPriceContainer>
-                  <ProductSinglePrice>
-                    {formatValue(item.price)}
-                  </ProductSinglePrice>
+          renderItem={({ item }: { item: Product }) => {
+            return (
+              <Product>
+                <ProductImage source={{ uri: item.image_url }} />
+                <ProductTitleContainer>
+                  <ProductTitle>{item.title}</ProductTitle>
+                  <ProductPriceContainer>
+                    <ProductSinglePrice>
+                      {formatValue(item.price)}
+                    </ProductSinglePrice>
 
-                  <TotalContainer>
-                    <ProductQuantity>{`${item.quantity}x`}</ProductQuantity>
+                    <TotalContainer>
+                      <ProductQuantity>
+                        {item.quantity ? `${item.quantity}x` : '1x'}
+                      </ProductQuantity>
 
-                    <ProductPrice>
-                      {formatValue(item.price * item.quantity)}
-                    </ProductPrice>
-                  </TotalContainer>
-                </ProductPriceContainer>
-              </ProductTitleContainer>
-              <ActionContainer>
-                <ActionButton
-                  testID={`increment-${item.id}`}
-                  onPress={() => handleIncrement(item.id)}
-                >
-                  <FeatherIcon name="plus" color="#E83F5B" size={16} />
-                </ActionButton>
-                <ActionButton
-                  testID={`decrement-${item.id}`}
-                  onPress={() => handleDecrement(item.id)}
-                >
-                  <FeatherIcon name="minus" color="#E83F5B" size={16} />
-                </ActionButton>
-              </ActionContainer>
-            </Product>
-          )}
+                      <ProductPrice>
+                        {formatValue(item.price * (item.quantity || 1))}
+                      </ProductPrice>
+                    </TotalContainer>
+                  </ProductPriceContainer>
+                </ProductTitleContainer>
+                <ActionContainer>
+                  <ActionButton
+                    testID={`increment-${item.id}`}
+                    onPress={() => increment(item.id)}
+                  >
+                    <FeatherIcon name="plus" color="#E83F5B" size={16} />
+                  </ActionButton>
+                  <ActionButton
+                    testID={`decrement-${item.id}`}
+                    onPress={() => decrement(item.id)}
+                  >
+                    <FeatherIcon name="minus" color="#E83F5B" size={16} />
+                  </ActionButton>
+                </ActionContainer>
+              </Product>
+            );
+          }}
         />
       </ProductContainer>
       <TotalProductsContainer>
